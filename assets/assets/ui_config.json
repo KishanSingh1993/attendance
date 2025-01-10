@@ -1,0 +1,32 @@
+{
+  "widgets": [
+    {
+      "type": "Text",
+      "properties": {
+        "text": "Hello, Dynamic UI!",
+        "style": {
+          "color": "blue",
+          "fontSize": 24
+        }
+      }
+    },
+    {
+      "type": "Container",
+      "properties": {
+        "width": 200,
+        "height": 200,
+        "color": "green",
+        "child": {
+          "type": "Text",
+          "properties": {
+            "text": "Inside Container",
+            "style": {
+              "color": "white",
+              "fontSize": 18
+            }
+          }
+        }
+      }
+    }
+  ]
+}
