@@ -14,7 +14,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  String _location = 'Fetching Address...';
+  String _location = 'Fetching Address';
+  String cTime = '';
 
   @override
   void initState() {
@@ -34,52 +35,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // Fetch the current location
-  // Future<void> _getCurrentLocation() async {
-  //   try {
-  //     // Check for location permissions
-  //     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //     if (!serviceEnabled) {
-  //       setState(() {
-  //         _location = 'Location services are disabled.';
-  //       });
-  //       return;
-  //     }
-
-  //     LocationPermission permission = await Geolocator.checkPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       permission = await Geolocator.requestPermission();
-  //       if (permission == LocationPermission.denied) {
-  //         setState(() {
-  //           _location = 'Location permissions are denied.';
-  //         });
-  //         return;
-  //       }
-  //     }
-
-  //     if (permission == LocationPermission.deniedForever) {
-  //       setState(() {
-  //         _location = 'Location permissions are permanently denied.';
-  //       });
-  //       return;
-  //     }
-
-  //     // Get the current position
-  //     Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high,
-  //     );
-
-  //     // Update the location string
-  //     setState(() {
-  //       _location = 'Lat: ${position.latitude}, Long: ${position.longitude}';
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _location = 'Failed to fetch location.';
-  //     });
-  //   }
-  // }
-  //
-
   Future<void> _getCurrentLocation() async {
     try {
       // Check for location permissions
@@ -114,20 +69,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Fetch the address based on latitude and longitude
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-
-      // Get the first placemark (most relevant)
-      Placemark place = placemarks[0];
-      String address =
-          '${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
-
-      // Update the location string with the address
+      // Update the location string
       setState(() {
-        _location = address; // Display the address instead of coordinates
+        _location = 'Lat: ${position.latitude}, Long: ${position.longitude}';
       });
     } catch (e) {
       setState(() {
@@ -135,6 +79,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     }
   }
+
+  // Future<void> _getCurrentLocation() async {
+  //   try {
+  //     // Check for location permissions
+  //     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //     if (!serviceEnabled) {
+  //       setState(() {
+  //         _location = 'Location services are disabled.';
+  //       });
+  //       return;
+  //     }
+
+  //     LocationPermission permission = await Geolocator.checkPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       permission = await Geolocator.requestPermission();
+  //       if (permission == LocationPermission.denied) {
+  //         setState(() {
+  //           _location = 'Location permissions are denied.';
+  //         });
+  //         return;
+  //       }
+  //     }
+
+  //     if (permission == LocationPermission.deniedForever) {
+  //       setState(() {
+  //         _location = 'Location permissions are permanently denied.';
+  //       });
+  //       return;
+  //     }
+
+  //     // Get the current position
+  //     Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high,
+  //     );
+
+  //     // Fetch the address based on latitude and longitude
+  //     List<Placemark> placemarks = await placemarkFromCoordinates(
+  //       position.latitude,
+  //       position.longitude,
+  //     );
+
+  //     // Get the first placemark (most relevant)
+  //     Placemark place = placemarks[0];
+  //     String address =
+  //         '${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
+
+  //     // Update the location string with the address
+  //     setState(() {
+  //       _location = address; // Display the address instead of coordinates
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _location = 'Failed to fetch location';
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -240,20 +240,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               const Icon(Icons.location_on,
                                   color: Colors.white),
                               const SizedBox(width: 8),
-                              Text(
-                                'Location: $_location', // Dynamic location
-                                style: const TextStyle(color: Colors.white),
+                              Flexible(
+                                child: Text(
+                                  'Location: $_location', // Dynamic location
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 8),
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.login, color: Colors.white),
-                              SizedBox(width: 8),
+                              const Icon(Icons.login, color: Colors.white),
+                              const SizedBox(width: 8),
                               Text(
-                                'Check-in:',
-                                style: TextStyle(color: Colors.white),
+                                'Check-in: $cTime',
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ],
                           ),
@@ -308,6 +310,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 ),
                                               ),
                                             );
+
+                                            setState(() {
+                                              cTime =
+                                                  checkInDetails['checkInTime'];
+                                            });
                                           } else {
                                             throw Exception('Check-in failed');
                                           }
